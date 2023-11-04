@@ -35,3 +35,70 @@ Expected Patterns:
 Supportive Pattern: An observed consistent increase in the frequency of terrorist killings in specific months across the years would support our hypothesis. For instance, if July repeatedly has higher incidences due to national holidays or events, it would validate our assumption about strategic timing.
 
 Contradictory Pattern: If the data shows no discernible pattern or if terrorist activities are evenly distributed across months, it would challenge our hypothesis and suggest that month-based seasonality might not play a crucial role in the timing of terrorist activities during the given period.
+
+
+```{r setup, include = FALSE}
+options(width = 100)
+knitr::opts_chunk$set(error = TRUE)
+library(dplyr)
+library(knitr)
+library(readr)
+library(tidyverse)
+library(broom)
+```
+
+```{r Analysis 1}
+
+library(tidyverse)
+
+load("data/DTV2009.RData")
+
+library(dplyr)
+
+x_clean <- x %>%
+  filter(month >= 1 & month <= 12)
+
+print(table(x_clean$month))
+
+monthly_killings_clean <- x_clean %>%
+  group_by(month) %>%
+  summarize(Killings = n())
+
+ggplot(monthly_killings_clean, aes(x = factor(month, levels = 1:12), y = Killings)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  scale_x_discrete(breaks = 1:12, labels = month.name) +
+  labs(x = "Month", y = "Frequency of Terrorist Events",
+       title = "Monthly Frequency of Terrorist Events in Western Europe (1965-2005)")
+
+
+```
+
+
+```{r Analysis 2}
+
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+
+x$date <- make_date(x$year, x$month, 1)
+
+monthly_attacks <- x %>%
+  group_by(date) %>%
+  summarize(NumberOfAttacks = n())
+
+ggplot(monthly_attacks, aes(x = date, y = NumberOfAttacks)) +
+  geom_line(color = "steelblue") +
+  geom_point(size = 0.5, color = "steelblue") +  
+  geom_smooth(method = "lm", se = FALSE, color = "darkorange") +  
+  labs(x = "Time", y = "Number of Terrorist Attacks",
+       title = "Monthly Number of Terrorist Attacks in Western Europe (1965-2005)") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+
+
+
