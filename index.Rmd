@@ -67,13 +67,13 @@ monthly_killings_clean <- x_clean %>%
 ggplot(monthly_killings_clean, aes(x = factor(month, levels = 1:12), y = Killings)) +
   geom_bar(stat = "identity", fill = "steelblue") +
   scale_x_discrete(breaks = 1:12, labels = month.name) +
-  labs(x = "Month", y = "Frequency of Terrorist Events",
-       title = "Monthly Frequency of Terrorist Events in Western Europe (1965-2005)")
+  labs(x = "Month", y = "Casualties of Terrorist Events",
+       title = "Monthly Casualties of Terrorist Attacks in Western Europe (1965-2005)")
 
 
 ```
 
-Analysis:
+## Preliminary Analysis:
 
 The bar chart visualizes the frequency of terrorist killings in Western European countries from 1965 to 2005 by month. From the chart, it's evident that May and August had the highest number of reported killings, with May being the peak. There's a noticeable increase in killings starting from April, with a peak in May, followed by a somewhat high frequency that persists through the summer and fall months before tapering off towards the end of the year. This pattern could suggest a seasonal trend in the frequency of terrorist activities, with late spring to early fall being periods of higher risk. However, to establish a solid conclusion, it would be essential to analyze the context of these events, the types of groups active during these times, and other socio-political factors that might influence these patterns
 
@@ -103,10 +103,27 @@ ggplot(monthly_attacks_distinct, aes(x = factor(month, levels = 1:12), y = Numbe
   labs(x = "Month", y = "Distinct Number of Attacks",
        title = "Monthly Distinct Number of Terrorist Attacks in Western Europe (1965-2005)")
 
+# Clean the data to ensure it includes only valid months
+x_clean <- x %>%
+  filter(month >= 1 & month <= 12)
+
+# Aggregate data to get the total count of attacks per month across all years
+monthly_attacks <- x_clean %>%
+  group_by(month) %>%
+  summarize(NumberOfAttacks = n())
+
+# Convert month to a factor for the GLM
+monthly_attacks$month <- as.factor(monthly_attacks$month)
+
+# Fit a Poisson regression model (use negative binomial if overdispersion is present)
+attack_glm <- glm(NumberOfAttacks ~ month, family = poisson, data = monthly_attacks)
+
+# Output the summary of the regression model
+summary(attack_glm)
 
 ```
 
-Therefore, we are now adjusting our approach. This new bar chart represents the monthly distribution of the distinct number of terrorist attacks in Western Europe from 1965 to 2005. This perspective focuses on the frequency of events rather than the severity in terms of casualties - providing us a fresh perspective that potentially removes the "mass casualty" events data skew we were faced with previously.
+So, with that being said, we are now adjusting our approach. This new bar chart represents the monthly distribution of the distinct number of terrorist attacks in Western Europe from 1965 to 2005. This perspective focuses on the frequency of events rather than the severity in terms of casualties - providing us a fresh perspective that potentially removes the "mass casualty events" data skew we were faced with previously.
 
 The new graph shows a trend where the number of distinct terrorist attacks increases through the spring, reaching an evident peak during the summer months. The small dip in the fall, particularly in August and September, followed by a rise again in October and November, suggests potential seasonal factors or operational cycles may influence terrorist activity, as our hypothesis stated.
 
@@ -118,7 +135,7 @@ Hypothesis 2: Vacation Periods: Summer months are typically vacation periods, wh
 
 Hypothesis 3: Political and Social Calendar: National holidays, elections or other political events often fall within these peak periods and may serve as catalysts for terrorist activities aimed at disrupting or making a statement during these times.
 
-The decrease in August and September could be due to a variety of factors, such as:
+The decrease in the Fall could be due to a variety of factors, such as:
 
 Hypothesis 1: Return to Routine: As people return to work and school, there may be a temporary dip in the availability of targets or in the operational capacity of terrorist networks.
 
@@ -152,6 +169,77 @@ ggplot(monthly_attacks, aes(x = date, y = NumberOfAttacks)) +
        title = "Monthly Number of Terrorist Attacks in Western Europe (1965-2005)") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
+
+# Part 2
+x$date <- make_date(x$year, x$month, 1)
+
+# Aggregate data by month
+monthly_attacks <- x %>%
+  group_by(date) %>%
+  summarize(NumberOfAttacks = n())
+
+# Convert the date to a numeric value for regression
+monthly_attacks$date_numeric <- as.numeric(monthly_attacks$date)
+
+# Fit the linear model
+lm_result <- lm(NumberOfAttacks ~ date_numeric, data = monthly_attacks)
+
+# Summary of the model
+summary(lm_result)
+
+
 ```
 
-Here, we notice that the monthly number of terrorist attacks in Western Europe is steadily decreasing from 1965 to 2005. Admittedly, this graph does not provide much information in the context of our hypothesis on the seasonality of terrorist events, even though it does show that there is a notable decrease in terrorist attacks through the years - which is why I added it; things are seemingly getting better!
+Here, as we extend the scope of our analysis, we notice that the monthly number of terrorist attacks in Western Europe is steadily decreasing from 1965 to 2005.
+
+Admittedly, this graph does not provide much information in the context of our hypothesis on the seasonality of terrorist events, even though it does show that there is a notable decrease in terrorist attacks through the years - which is why I added it; things are seemingly getting better!
+
+
+
+--------
+
+## Final Report
+
+1. Introduction
+
+This report investigates temporal patterns in terrorist activities across Western Europe from 1965 to 2005, specifically examining the relationship between the frequency of terrorist attacks and the months of the year. The hypothesis proposes a seasonal trend, where late spring to early fall is anticipated to be higher-risk periods. Identifying these patterns is vital for enhancing public safety measures and providing insights into the operational timing of terrorist groups.
+
+2. Data
+
+The dataset is compiled from historical records of terrorist attacks, with the main dependent variable being the monthly count of terrorist attacks. This study initially identified a skewed number of casualties in May and August, but these were later attributed to outliers. To mitigate this, the analysis was refocused on the frequency of attacks, aiming to capture a more consistent pattern of terrorist activities. The research is grounded in a cross-sectional design, which analyzes different subjects within a singular temporal dimension.
+
+3. Results
+
+The Poisson regression analysis - the statistical model suited for count data - was applied to evaluate the monthly frequency of terrorist attacks. The model revealed that certain months showed a statistically significant increase in the number of attacks compared to January, the baseline month. Specifically, May, June, July, August, October, November, and December were found to have higher numbers of attacks, aligning with the hypothesized seasonal trend. The coefficients from the regression model indicated that these months had a higher expected count of attacks, with May and August (the beginning of the Summer season) having the most substantial increase.
+
+4. Conclusion
+
+The regression results align with the hypothesis, indicating a seasonal pattern in the frequency of terrorist attacks, with peaks during summer months and notable increases in late fall. This pattern is consistent with the initial hypothesis of seasonal variation in terrorist activity. However, given the cross-sectional design, causal relationships cannot be definitively established. The study acknowledges that confounding variables not included in the model could influence the results. Future research could benefit from a longitudinal dataset, potentially spanning a broader range of years, and including additional variables such as geopolitical events, economic factors, or counterterrorism strategies. A deeper analysis could provide a more nuanced understanding of the drivers behind the seasonal trends in terrorist activities.
+
+
+```{r Analysis 5}
+
+# Assuming x is your raw data with a 'year' column and 'month' is coded numerically 1-12
+library(tidyverse)
+
+load("data/DTV2009.RData")
+
+# Clean the data to ensure it includes only valid months
+x_clean <- x %>%
+  filter(month >= 1 & month <= 12)
+
+# Aggregate data to get the total count of attacks per month across all years
+monthly_attacks <- x_clean %>%
+  group_by(month) %>%
+  summarize(NumberOfAttacks = n())
+
+# Convert month to a factor for the GLM
+monthly_attacks$month <- as.factor(monthly_attacks$month)
+
+# Fit a Poisson regression model (use negative binomial if overdispersion is present)
+attack_glm <- glm(NumberOfAttacks ~ month, family = poisson, data = monthly_attacks)
+
+# Output the summary of the regression model
+summary(attack_glm)
+```
+

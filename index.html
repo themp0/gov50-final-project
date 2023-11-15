@@ -1580,12 +1580,12 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>monthly_killings_clean</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>factor</a></span><span class='op'>(</span><span class='va'>month</span>, levels <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>12</span><span class='op'>)</span>, y <span class='op'>=</span> <span class='va'>Killings</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span></span>
 <span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_bar.html'>geom_bar</a></span><span class='op'>(</span>stat <span class='op'>=</span> <span class='st'>"identity"</span>, fill <span class='op'>=</span> <span class='st'>"steelblue"</span><span class='op'>)</span> <span class='op'>+</span></span>
 <span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_discrete.html'>scale_x_discrete</a></span><span class='op'>(</span>breaks <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>12</span>, labels <span class='op'>=</span> <span class='va'>month.name</span><span class='op'>)</span> <span class='op'>+</span></span>
-<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='st'>"Month"</span>, y <span class='op'>=</span> <span class='st'>"Frequency of Terrorist Events"</span>,</span>
-<span>       title <span class='op'>=</span> <span class='st'>"Monthly Frequency of Terrorist Events in Western Europe (1965-2005)"</span><span class='op'>)</span></span></code></pre>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='st'>"Month"</span>, y <span class='op'>=</span> <span class='st'>"Casualties of Terrorist Events"</span>,</span>
+<span>       title <span class='op'>=</span> <span class='st'>"Monthly Casualties of Terrorist Attacks in Western Europe (1965-2005)"</span><span class='op'>)</span></span></code></pre>
 </div>
 <p><img src="index_files/figure-html5/Analysis%201-1.png" width="624" /></p>
 </div>
-<p>Analysis:</p>
+<h2 id="preliminary-analysis">Preliminary Analysis:</h2>
 <p>The bar chart visualizes the frequency of terrorist killings in Western European countries from 1965 to 2005 by month. From the chart, it’s evident that May and August had the highest number of reported killings, with May being the peak. There’s a noticeable increase in killings starting from April, with a peak in May, followed by a somewhat high frequency that persists through the summer and fall months before tapering off towards the end of the year. This pattern could suggest a seasonal trend in the frequency of terrorist activities, with late spring to early fall being periods of higher risk. However, to establish a solid conclusion, it would be essential to analyze the context of these events, the types of groups active during these times, and other socio-political factors that might influence these patterns</p>
 <p>However, upon further analysis, it’s important to note that this data is significantly skewed by four “mass casualty” events. Specifically, in May, there was one such event accounting for 26 deaths, which heavily influences the peak observed. In August, two mass casualty events, with 85 and 29 deaths respectively, disproportionately inflate the figures for that month. The presence of these outliers suggests that the apparent seasonal trend, with a spike in late spring and persisting through summer and fall, might not accurately reflect the general pattern of terrorist activities. For that reason, we should look at ways to potentially remove outlier events that significantly skew data.</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -1611,15 +1611,62 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='st'>"Month"</span>, y <span class='op'>=</span> <span class='st'>"Distinct Number of Attacks"</span>,</span>
 <span>       title <span class='op'>=</span> <span class='st'>"Monthly Distinct Number of Terrorist Attacks in Western Europe (1965-2005)"</span><span class='op'>)</span></span></code></pre>
 </div>
-<p><img src="index_files/figure-html5/Analysis%203-1.png" width="624" /></p>
+<img src="index_files/figure-html5/Analysis%203-1.png" width="624" />
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Clean the data to ensure it includes only valid months</span></span>
+<span><span class='va'>x_clean</span> <span class='op'>&lt;-</span> <span class='va'>x</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>month</span> <span class='op'>&gt;=</span> <span class='fl'>1</span> <span class='op'>&amp;</span> <span class='va'>month</span> <span class='op'>&lt;=</span> <span class='fl'>12</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='co'># Aggregate data to get the total count of attacks per month across all years</span></span>
+<span><span class='va'>monthly_attacks</span> <span class='op'>&lt;-</span> <span class='va'>x_clean</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></span><span class='op'>(</span><span class='va'>month</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/summarise.html'>summarize</a></span><span class='op'>(</span>NumberOfAttacks <span class='op'>=</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/context.html'>n</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='co'># Convert month to a factor for the GLM</span></span>
+<span><span class='va'>monthly_attacks</span><span class='op'>$</span><span class='va'>month</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>as.factor</a></span><span class='op'>(</span><span class='va'>monthly_attacks</span><span class='op'>$</span><span class='va'>month</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='co'># Fit a Poisson regression model (use negative binomial if overdispersion is present)</span></span>
+<span><span class='va'>attack_glm</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/glm.html'>glm</a></span><span class='op'>(</span><span class='va'>NumberOfAttacks</span> <span class='op'>~</span> <span class='va'>month</span>, family <span class='op'>=</span> <span class='va'>poisson</span>, data <span class='op'>=</span> <span class='va'>monthly_attacks</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='co'># Output the summary of the regression model</span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>attack_glm</span><span class='op'>)</span></span></code></pre>
 </div>
-<p>Therefore, we are now adjusting our approach. This new bar chart represents the monthly distribution of the distinct number of terrorist attacks in Western Europe from 1965 to 2005. This perspective focuses on the frequency of events rather than the severity in terms of casualties - providing us a fresh perspective that potentially removes the “mass casualty” events data skew we were faced with previously.</p>
+<pre><code>
+Call:
+glm(formula = NumberOfAttacks ~ month, family = poisson, data = monthly_attacks)
+
+Coefficients:
+            Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)  5.84354    0.05384 108.539  &lt; 2e-16 ***
+month2       0.09663    0.07436   1.299 0.193820    
+month3       0.07266    0.07479   0.971 0.331323    
+month4       0.09663    0.07436   1.299 0.193820    
+month5       0.31555    0.07080   4.457 8.32e-06 ***
+month6       0.22024    0.07228   3.047 0.002310 ** 
+month7       0.20383    0.07254   2.810 0.004959 ** 
+month8       0.32397    0.07068   4.584 4.56e-06 ***
+month9       0.09925    0.07432   1.336 0.181701    
+month10      0.26125    0.07163   3.647 0.000265 ***
+month11      0.24095    0.07195   3.349 0.000811 ***
+month12      0.14792    0.07347   2.013 0.044093 *  
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+(Dispersion parameter for poisson family taken to be 1)
+
+    Null deviance:  4.7838e+01  on 11  degrees of freedom
+Residual deviance: -2.2249e-13  on  0  degrees of freedom
+AIC: 118.26
+
+Number of Fisher Scoring iterations: 2</code></pre>
+</div>
+<p>So, with that being said, we are now adjusting our approach. This new bar chart represents the monthly distribution of the distinct number of terrorist attacks in Western Europe from 1965 to 2005. This perspective focuses on the frequency of events rather than the severity in terms of casualties - providing us a fresh perspective that potentially removes the “mass casualty events” data skew we were faced with previously.</p>
 <p>The new graph shows a trend where the number of distinct terrorist attacks increases through the spring, reaching an evident peak during the summer months. The small dip in the fall, particularly in August and September, followed by a rise again in October and November, suggests potential seasonal factors or operational cycles may influence terrorist activity, as our hypothesis stated.</p>
 <p>This pattern could be related to various factors:</p>
 <p>Hypothesis 1: Operational Conditions: Better weather in spring and summer could facilitate the logistics of carrying out attacks. Additionally, longer daylight hours may offer more opportunities for actions that require daylight.</p>
 <p>Hypothesis 2: Vacation Periods: Summer months are typically vacation periods, which may not only affect the number of potential targets due to tourism but might also impact the availability of members within terrorist groups to both plan and execute attacks.</p>
 <p>Hypothesis 3: Political and Social Calendar: National holidays, elections or other political events often fall within these peak periods and may serve as catalysts for terrorist activities aimed at disrupting or making a statement during these times.</p>
-<p>The decrease in August and September could be due to a variety of factors, such as:</p>
+<p>The decrease in the Fall could be due to a variety of factors, such as:</p>
 <p>Hypothesis 1: Return to Routine: As people return to work and school, there may be a temporary dip in the availability of targets or in the operational capacity of terrorist networks.</p>
 <p>Hypothesis 2: Counterterrorism Efforts: The return to work of police and national security forces from summer holidays could deter planned attacks.</p>
 <p>Hypothesis 3: Resource Reallocation: Terrorist groups may reallocate resources after a high-activity period, leading to a temporary dip in attacks in these months.</p>
@@ -1647,10 +1694,120 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <span>       title <span class='op'>=</span> <span class='st'>"Monthly Number of Terrorist Attacks in Western Europe (1965-2005)"</span><span class='op'>)</span> <span class='op'>+</span></span>
 <span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/theme.html'>theme</a></span><span class='op'>(</span>axis.text.x <span class='op'>=</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/element.html'>element_text</a></span><span class='op'>(</span>angle <span class='op'>=</span> <span class='fl'>45</span>, hjust <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span></span></code></pre>
 </div>
-<p><img src="index_files/figure-html5/Analysis%202-1.png" width="624" /></p>
+<img src="index_files/figure-html5/Analysis%202-1.png" width="624" />
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Part 2</span></span>
+<span><span class='va'>x</span><span class='op'>$</span><span class='va'>date</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://lubridate.tidyverse.org/reference/make_datetime.html'>make_date</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>$</span><span class='va'>year</span>, <span class='va'>x</span><span class='op'>$</span><span class='va'>month</span>, <span class='fl'>1</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='co'># Aggregate data by month</span></span>
+<span><span class='va'>monthly_attacks</span> <span class='op'>&lt;-</span> <span class='va'>x</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></span><span class='op'>(</span><span class='va'>date</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/summarise.html'>summarize</a></span><span class='op'>(</span>NumberOfAttacks <span class='op'>=</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/context.html'>n</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='co'># Convert the date to a numeric value for regression</span></span>
+<span><span class='va'>monthly_attacks</span><span class='op'>$</span><span class='va'>date_numeric</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>as.numeric</a></span><span class='op'>(</span><span class='va'>monthly_attacks</span><span class='op'>$</span><span class='va'>date</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='co'># Fit the linear model</span></span>
+<span><span class='va'>lm_result</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span><span class='op'>(</span><span class='va'>NumberOfAttacks</span> <span class='op'>~</span> <span class='va'>date_numeric</span>, data <span class='op'>=</span> <span class='va'>monthly_attacks</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='co'># Summary of the model</span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>lm_result</span><span class='op'>)</span></span></code></pre>
 </div>
-<p>Here, we notice that the monthly number of terrorist attacks in Western Europe is steadily decreasing from 1965 to 2005. Admittedly, this graph does not provide much information in the context of our hypothesis on the seasonality of terrorist events, even though it does show that there is a notable decrease in terrorist attacks through the years - which is why I added it; things are seemingly getting better!</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<pre><code>
+Call:
+lm(formula = NumberOfAttacks ~ date_numeric, data = monthly_attacks)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-20.750  -4.347  -1.424   3.136  82.162 
+
+Coefficients:
+               Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  19.9400325  0.8990167   22.18   &lt;2e-16 ***
+date_numeric -0.0013200  0.0001229  -10.74   &lt;2e-16 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 9.701 on 420 degrees of freedom
+  (1 observation deleted due to missingness)
+Multiple R-squared:  0.2155,    Adjusted R-squared:  0.2136 
+F-statistic: 115.4 on 1 and 420 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<p>Here, as we extend the scope of our analysis, we notice that the monthly number of terrorist attacks in Western Europe is steadily decreasing from 1965 to 2005.</p>
+<p>Admittedly, this graph does not provide much information in the context of our hypothesis on the seasonality of terrorist events, even though it does show that there is a notable decrease in terrorist attacks through the years - which is why I added it; things are seemingly getting better!</p>
+<hr />
+<h2 id="final-report">Final Report</h2>
+<ol type="1">
+<li>Introduction</li>
+</ol>
+<p>This report investigates temporal patterns in terrorist activities across Western Europe from 1965 to 2005, specifically examining the relationship between the frequency of terrorist attacks and the months of the year. The hypothesis proposes a seasonal trend, where late spring to early fall is anticipated to be higher-risk periods. Identifying these patterns is vital for enhancing public safety measures and providing insights into the operational timing of terrorist groups.</p>
+<ol start="2" type="1">
+<li>Data</li>
+</ol>
+<p>The dataset is compiled from historical records of terrorist attacks, with the main dependent variable being the monthly count of terrorist attacks. This study initially identified a skewed number of casualties in May and August, but these were later attributed to outliers. To mitigate this, the analysis was refocused on the frequency of attacks, aiming to capture a more consistent pattern of terrorist activities. The research is grounded in a cross-sectional design, which analyzes different subjects within a singular temporal dimension.</p>
+<ol start="3" type="1">
+<li>Results</li>
+</ol>
+<p>The Poisson regression analysis - the statistical model suited for count data - was applied to evaluate the monthly frequency of terrorist attacks. The model revealed that certain months showed a statistically significant increase in the number of attacks compared to January, the baseline month. Specifically, May, June, July, August, October, November, and December were found to have higher numbers of attacks, aligning with the hypothesized seasonal trend. The coefficients from the regression model indicated that these months had a higher expected count of attacks, with May and August (the beginning of the Summer season) having the most substantial increase.</p>
+<ol start="4" type="1">
+<li>Conclusion</li>
+</ol>
+<p>The regression results align with the hypothesis, indicating a seasonal pattern in the frequency of terrorist attacks, with peaks during summer months and notable increases in late fall. This pattern is consistent with the initial hypothesis of seasonal variation in terrorist activity. However, given the cross-sectional design, causal relationships cannot be definitively established. The study acknowledges that confounding variables not included in the model could influence the results. Future research could benefit from a longitudinal dataset, potentially spanning a broader range of years, and including additional variables such as geopolitical events, economic factors, or counterterrorism strategies. A deeper analysis could provide a more nuanced understanding of the drivers behind the seasonal trends in terrorist activities.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Assuming x is your raw data with a 'year' column and 'month' is coded numerically 1-12</span></span>
+<span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://tidyverse.tidyverse.org'>tidyverse</a></span><span class='op'>)</span></span>
+<span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/base/load.html'>load</a></span><span class='op'>(</span><span class='st'>"data/DTV2009.RData"</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='co'># Clean the data to ensure it includes only valid months</span></span>
+<span><span class='va'>x_clean</span> <span class='op'>&lt;-</span> <span class='va'>x</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>month</span> <span class='op'>&gt;=</span> <span class='fl'>1</span> <span class='op'>&amp;</span> <span class='va'>month</span> <span class='op'>&lt;=</span> <span class='fl'>12</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='co'># Aggregate data to get the total count of attacks per month across all years</span></span>
+<span><span class='va'>monthly_attacks</span> <span class='op'>&lt;-</span> <span class='va'>x_clean</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></span><span class='op'>(</span><span class='va'>month</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/summarise.html'>summarize</a></span><span class='op'>(</span>NumberOfAttacks <span class='op'>=</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/context.html'>n</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='co'># Convert month to a factor for the GLM</span></span>
+<span><span class='va'>monthly_attacks</span><span class='op'>$</span><span class='va'>month</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>as.factor</a></span><span class='op'>(</span><span class='va'>monthly_attacks</span><span class='op'>$</span><span class='va'>month</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='co'># Fit a Poisson regression model (use negative binomial if overdispersion is present)</span></span>
+<span><span class='va'>attack_glm</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/glm.html'>glm</a></span><span class='op'>(</span><span class='va'>NumberOfAttacks</span> <span class='op'>~</span> <span class='va'>month</span>, family <span class='op'>=</span> <span class='va'>poisson</span>, data <span class='op'>=</span> <span class='va'>monthly_attacks</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='co'># Output the summary of the regression model</span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>attack_glm</span><span class='op'>)</span></span></code></pre>
+</div>
+<pre><code>
+Call:
+glm(formula = NumberOfAttacks ~ month, family = poisson, data = monthly_attacks)
+
+Coefficients:
+            Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)  5.84354    0.05384 108.539  &lt; 2e-16 ***
+month2       0.09663    0.07436   1.299 0.193820    
+month3       0.07266    0.07479   0.971 0.331323    
+month4       0.09663    0.07436   1.299 0.193820    
+month5       0.31555    0.07080   4.457 8.32e-06 ***
+month6       0.22024    0.07228   3.047 0.002310 ** 
+month7       0.20383    0.07254   2.810 0.004959 ** 
+month8       0.32397    0.07068   4.584 4.56e-06 ***
+month9       0.09925    0.07432   1.336 0.181701    
+month10      0.26125    0.07163   3.647 0.000265 ***
+month11      0.24095    0.07195   3.349 0.000811 ***
+month12      0.14792    0.07347   2.013 0.044093 *  
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+(Dispersion parameter for poisson family taken to be 1)
+
+    Null deviance:  4.7838e+01  on 11  degrees of freedom
+Residual deviance: -2.2249e-13  on  0  degrees of freedom
+AIC: 118.26
+
+Number of Fisher Scoring iterations: 2</code></pre>
+</div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
