@@ -64,12 +64,13 @@ monthly_killings_clean <- x_clean %>%
   group_by(month) %>%
   summarize(Killings = n())
 
-ggplot(monthly_killings_clean, aes(x = factor(month, levels = 1:12), y = Killings)) +
+plot_1 <- ggplot(monthly_killings_clean, aes(x = factor(month, levels = 1:12), y = Killings)) +
   geom_bar(stat = "identity", fill = "steelblue") +
   scale_x_discrete(breaks = 1:12, labels = month.name) +
   labs(x = "Month", y = "Casualties of Terrorist Events",
        title = "Monthly Casualties of Terrorist Attacks in Western Europe (1965-2005)")
 
+print(plot_1)
 
 ```
 
@@ -96,11 +97,14 @@ monthly_attacks_distinct <- x_clean %>%
   group_by(month) %>%
   summarize(NumberOfAttacks = n_distinct(attack))
 
-ggplot(monthly_attacks_distinct, aes(x = factor(month, levels = 1:12), y = NumberOfAttacks)) +
+plot_2 <- ggplot(monthly_attacks_distinct, aes(x = factor(month, levels = 1:12), y = NumberOfAttacks)) +
   geom_bar(stat = "identity", fill = "steelblue") +
   scale_x_discrete(breaks = 1:12, labels = month.name) +
   labs(x = "Month", y = "Distinct Number of Attacks",
        title = "Monthly Distinct Number of Terrorist Attacks in Western Europe (1965-2005)")
+
+print (plot_2)
+
 
 # Part 2
 
@@ -113,6 +117,12 @@ monthly_attacks$month <- as.factor(monthly_attacks$month)
 attack_glm <- glm(NumberOfAttacks ~ month, family = poisson, data = monthly_attacks)
 
 summary(attack_glm)
+
+# Convert summary to a dataframe
+model_summary_df <- broom::tidy(attack_glm)
+
+# Display the table using knitr::kable
+knitr::kable(model_summary_df, format = "markdown")
 
 ```
 
@@ -156,7 +166,7 @@ monthly_attacks <- x %>%
   group_by(date) %>%
   summarize(NumberOfAttacks = n())
 
-ggplot(monthly_attacks, aes(x = date, y = NumberOfAttacks)) +
+plot_3 <- ggplot(monthly_attacks, aes(x = date, y = NumberOfAttacks)) +
   geom_line(color = "steelblue") +
   geom_point(size = 0.5, color = "steelblue") +  
   geom_smooth(method = "lm", color = "darkorange") +  
@@ -164,6 +174,7 @@ ggplot(monthly_attacks, aes(x = date, y = NumberOfAttacks)) +
        title = "Monthly Number of Terrorist Attacks in Western Europe (1965-2005)") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
+print(plot_3)
 
 # Part 2
 
@@ -204,34 +215,15 @@ The dataset is compiled from historical records of terrorist attacks, with the m
 
 The Poisson regression analysis - the statistical model suited for count data - was applied to evaluate the monthly frequency of terrorist attacks. The model revealed that certain months showed a statistically significant increase in the number of attacks compared to January, the baseline month. Specifically, May, June, July, August, October, November, and December were found to have higher numbers of attacks, aligning with the hypothesized seasonal trend. The coefficients from the regression model indicated that these months had a higher expected count of attacks, with May and August (the beginning of the Summer season) having the most substantial increase.
 
+```{r Plot Final}
+print(plot_2)
+
+knitr::kable(model_summary_df, format = "markdown")
+
+```
+
 4. Conclusion
 
 The regression results align with the hypothesis, indicating a seasonal pattern in the frequency of terrorist attacks, with peaks during summer months and notable increases in late fall. This pattern is consistent with the initial hypothesis of seasonal variation in terrorist activity. However, given the cross-sectional design, causal relationships cannot be definitively established. The study acknowledges that confounding variables not included in the model could influence the results. Future research could benefit from a longitudinal dataset, potentially spanning a broader range of years, and including additional variables such as geopolitical events, economic factors, or counterterrorism strategies. A deeper analysis could provide a more nuanced understanding of the drivers behind the seasonal trends in terrorist activities.
 
-
-```{r Analysis 5}
-
-# Assuming x is your raw data with a 'year' column and 'month' is coded numerically 1-12
-library(tidyverse)
-
-load("data/DTV2009.RData")
-
-# Clean the data to ensure it includes only valid months
-x_clean <- x %>%
-  filter(month >= 1 & month <= 12)
-
-# Aggregate data to get the total count of attacks per month across all years
-monthly_attacks <- x_clean %>%
-  group_by(month) %>%
-  summarize(NumberOfAttacks = n())
-
-# Convert month to a factor for the GLM
-monthly_attacks$month <- as.factor(monthly_attacks$month)
-
-# Fit a Poisson regression model (use negative binomial if overdispersion is present)
-attack_glm <- glm(NumberOfAttacks ~ month, family = poisson, data = monthly_attacks)
-
-# Output the summary of the regression model
-summary(attack_glm)
-```
 
