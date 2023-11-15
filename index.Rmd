@@ -82,43 +82,36 @@ However, upon further analysis, it's important to note that this data is signifi
 
 ```{r Analysis 3}
 
-# Revised Code for Distinct Count of Attacks per Month
 
 library(tidyverse)
 
 load("data/DTV2009.RData")
 
+#Part 1
+
 x_clean <- x %>%
   filter(month >= 1 & month <= 12)
 
-# Counting distinct number of attacks per month
 monthly_attacks_distinct <- x_clean %>%
   group_by(month) %>%
   summarize(NumberOfAttacks = n_distinct(attack))
 
-# Plotting the distinct number of attacks
 ggplot(monthly_attacks_distinct, aes(x = factor(month, levels = 1:12), y = NumberOfAttacks)) +
   geom_bar(stat = "identity", fill = "steelblue") +
   scale_x_discrete(breaks = 1:12, labels = month.name) +
   labs(x = "Month", y = "Distinct Number of Attacks",
        title = "Monthly Distinct Number of Terrorist Attacks in Western Europe (1965-2005)")
 
-# Clean the data to ensure it includes only valid months
-x_clean <- x %>%
-  filter(month >= 1 & month <= 12)
+# Part 2
 
-# Aggregate data to get the total count of attacks per month across all years
 monthly_attacks <- x_clean %>%
   group_by(month) %>%
   summarize(NumberOfAttacks = n())
 
-# Convert month to a factor for the GLM
 monthly_attacks$month <- as.factor(monthly_attacks$month)
 
-# Fit a Poisson regression model (use negative binomial if overdispersion is present)
 attack_glm <- glm(NumberOfAttacks ~ month, family = poisson, data = monthly_attacks)
 
-# Output the summary of the regression model
 summary(attack_glm)
 
 ```
@@ -155,6 +148,8 @@ library(ggplot2)
 library(dplyr)
 library(lubridate)
 
+#Part 1
+
 x$date <- make_date(x$year, x$month, 1)
 
 monthly_attacks <- x %>%
@@ -171,20 +166,17 @@ ggplot(monthly_attacks, aes(x = date, y = NumberOfAttacks)) +
 
 
 # Part 2
+
 x$date <- make_date(x$year, x$month, 1)
 
-# Aggregate data by month
 monthly_attacks <- x %>%
   group_by(date) %>%
   summarize(NumberOfAttacks = n())
 
-# Convert the date to a numeric value for regression
 monthly_attacks$date_numeric <- as.numeric(monthly_attacks$date)
 
-# Fit the linear model
 lm_result <- lm(NumberOfAttacks ~ date_numeric, data = monthly_attacks)
 
-# Summary of the model
 summary(lm_result)
 
 

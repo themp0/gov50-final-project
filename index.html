@@ -1590,21 +1590,19 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <p>However, upon further analysis, it’s important to note that this data is significantly skewed by four “mass casualty” events. Specifically, in May, there was one such event accounting for 26 deaths, which heavily influences the peak observed. In August, two mass casualty events, with 85 and 29 deaths respectively, disproportionately inflate the figures for that month. The presence of these outliers suggests that the apparent seasonal trend, with a spike in late spring and persisting through summer and fall, might not accurately reflect the general pattern of terrorist activities. For that reason, we should look at ways to potentially remove outlier events that significantly skew data.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Revised Code for Distinct Count of Attacks per Month</span></span>
-<span></span>
-<span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://tidyverse.tidyverse.org'>tidyverse</a></span><span class='op'>)</span></span>
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://tidyverse.tidyverse.org'>tidyverse</a></span><span class='op'>)</span></span>
 <span></span>
 <span><span class='fu'><a href='https://rdrr.io/r/base/load.html'>load</a></span><span class='op'>(</span><span class='st'>"data/DTV2009.RData"</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='co'>#Part 1</span></span>
 <span></span>
 <span><span class='va'>x_clean</span> <span class='op'>&lt;-</span> <span class='va'>x</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
 <span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>month</span> <span class='op'>&gt;=</span> <span class='fl'>1</span> <span class='op'>&amp;</span> <span class='va'>month</span> <span class='op'>&lt;=</span> <span class='fl'>12</span><span class='op'>)</span></span>
 <span></span>
-<span><span class='co'># Counting distinct number of attacks per month</span></span>
 <span><span class='va'>monthly_attacks_distinct</span> <span class='op'>&lt;-</span> <span class='va'>x_clean</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
 <span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></span><span class='op'>(</span><span class='va'>month</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
 <span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/summarise.html'>summarize</a></span><span class='op'>(</span>NumberOfAttacks <span class='op'>=</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/n_distinct.html'>n_distinct</a></span><span class='op'>(</span><span class='va'>attack</span><span class='op'>)</span><span class='op'>)</span></span>
 <span></span>
-<span><span class='co'># Plotting the distinct number of attacks</span></span>
 <span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>monthly_attacks_distinct</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>factor</a></span><span class='op'>(</span><span class='va'>month</span>, levels <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>12</span><span class='op'>)</span>, y <span class='op'>=</span> <span class='va'>NumberOfAttacks</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span></span>
 <span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_bar.html'>geom_bar</a></span><span class='op'>(</span>stat <span class='op'>=</span> <span class='st'>"identity"</span>, fill <span class='op'>=</span> <span class='st'>"steelblue"</span><span class='op'>)</span> <span class='op'>+</span></span>
 <span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_discrete.html'>scale_x_discrete</a></span><span class='op'>(</span>breaks <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>12</span>, labels <span class='op'>=</span> <span class='va'>month.name</span><span class='op'>)</span> <span class='op'>+</span></span>
@@ -1613,22 +1611,16 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </div>
 <img src="index_files/figure-html5/Analysis%203-1.png" width="624" />
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Clean the data to ensure it includes only valid months</span></span>
-<span><span class='va'>x_clean</span> <span class='op'>&lt;-</span> <span class='va'>x</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
-<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>month</span> <span class='op'>&gt;=</span> <span class='fl'>1</span> <span class='op'>&amp;</span> <span class='va'>month</span> <span class='op'>&lt;=</span> <span class='fl'>12</span><span class='op'>)</span></span>
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Part 2</span></span>
 <span></span>
-<span><span class='co'># Aggregate data to get the total count of attacks per month across all years</span></span>
 <span><span class='va'>monthly_attacks</span> <span class='op'>&lt;-</span> <span class='va'>x_clean</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
 <span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></span><span class='op'>(</span><span class='va'>month</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
 <span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/summarise.html'>summarize</a></span><span class='op'>(</span>NumberOfAttacks <span class='op'>=</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/context.html'>n</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></span>
 <span></span>
-<span><span class='co'># Convert month to a factor for the GLM</span></span>
 <span><span class='va'>monthly_attacks</span><span class='op'>$</span><span class='va'>month</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>as.factor</a></span><span class='op'>(</span><span class='va'>monthly_attacks</span><span class='op'>$</span><span class='va'>month</span><span class='op'>)</span></span>
 <span></span>
-<span><span class='co'># Fit a Poisson regression model (use negative binomial if overdispersion is present)</span></span>
 <span><span class='va'>attack_glm</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/glm.html'>glm</a></span><span class='op'>(</span><span class='va'>NumberOfAttacks</span> <span class='op'>~</span> <span class='va'>month</span>, family <span class='op'>=</span> <span class='va'>poisson</span>, data <span class='op'>=</span> <span class='va'>monthly_attacks</span><span class='op'>)</span></span>
 <span></span>
-<span><span class='co'># Output the summary of the regression model</span></span>
 <span><span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>attack_glm</span><span class='op'>)</span></span></code></pre>
 </div>
 <pre><code>
@@ -1680,6 +1672,8 @@ Number of Fisher Scoring iterations: 2</code></pre>
 <span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dplyr.tidyverse.org'>dplyr</a></span><span class='op'>)</span></span>
 <span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://lubridate.tidyverse.org'>lubridate</a></span><span class='op'>)</span></span>
 <span></span>
+<span><span class='co'>#Part 1</span></span>
+<span></span>
 <span><span class='va'>x</span><span class='op'>$</span><span class='va'>date</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://lubridate.tidyverse.org/reference/make_datetime.html'>make_date</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>$</span><span class='va'>year</span>, <span class='va'>x</span><span class='op'>$</span><span class='va'>month</span>, <span class='fl'>1</span><span class='op'>)</span></span>
 <span></span>
 <span><span class='va'>monthly_attacks</span> <span class='op'>&lt;-</span> <span class='va'>x</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
@@ -1697,20 +1691,17 @@ Number of Fisher Scoring iterations: 2</code></pre>
 <img src="index_files/figure-html5/Analysis%202-1.png" width="624" />
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Part 2</span></span>
+<span></span>
 <span><span class='va'>x</span><span class='op'>$</span><span class='va'>date</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://lubridate.tidyverse.org/reference/make_datetime.html'>make_date</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>$</span><span class='va'>year</span>, <span class='va'>x</span><span class='op'>$</span><span class='va'>month</span>, <span class='fl'>1</span><span class='op'>)</span></span>
 <span></span>
-<span><span class='co'># Aggregate data by month</span></span>
 <span><span class='va'>monthly_attacks</span> <span class='op'>&lt;-</span> <span class='va'>x</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
 <span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></span><span class='op'>(</span><span class='va'>date</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
 <span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/summarise.html'>summarize</a></span><span class='op'>(</span>NumberOfAttacks <span class='op'>=</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/context.html'>n</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></span>
 <span></span>
-<span><span class='co'># Convert the date to a numeric value for regression</span></span>
 <span><span class='va'>monthly_attacks</span><span class='op'>$</span><span class='va'>date_numeric</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>as.numeric</a></span><span class='op'>(</span><span class='va'>monthly_attacks</span><span class='op'>$</span><span class='va'>date</span><span class='op'>)</span></span>
 <span></span>
-<span><span class='co'># Fit the linear model</span></span>
 <span><span class='va'>lm_result</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span><span class='op'>(</span><span class='va'>NumberOfAttacks</span> <span class='op'>~</span> <span class='va'>date_numeric</span>, data <span class='op'>=</span> <span class='va'>monthly_attacks</span><span class='op'>)</span></span>
 <span></span>
-<span><span class='co'># Summary of the model</span></span>
 <span><span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>lm_result</span><span class='op'>)</span></span></code></pre>
 </div>
 <pre><code>
