@@ -209,16 +209,29 @@ This report investigates temporal patterns in terrorist activities across Wester
 
 2. Data
 
-The dataset is compiled from historical records of terrorist attacks, with the main dependent variable being the monthly count of terrorist attacks. This study initially identified a skewed number of casualties in May and August, but these were later attributed to outliers. To mitigate this, the analysis was refocused on the frequency of attacks, aiming to capture a more consistent pattern of terrorist activities. The research is grounded in a cross-sectional design, which analyzes different subjects within a singular temporal dimension.
+The dataset is compiled from historical records of terrorist attacks, with the main dependent variable being the monthly count of terrorist attacks. This study initially identified a skewed number of casualties in May and August, but these were later attributed to outliers (See Plot 1 below).
+
+```{r Plot Final 1}
+print(plot_1)
+
+```
+
+To mitigate this, the analysis was refocused on the frequency of attacks, aiming to capture a more consistent pattern of terrorist activities (See Plot 2 below). The research is grounded in a cross-sectional design, which analyzes different subjects within a singular temporal dimension.
 
 3. Results
 
-The Poisson regression analysis - the statistical model suited for count data - was applied to evaluate the monthly frequency of terrorist attacks. The model revealed that certain months showed a statistically significant increase in the number of attacks compared to January, the baseline month. Specifically, May, June, July, August, October, November, and December were found to have higher numbers of attacks, aligning with the hypothesized seasonal trend. The coefficients from the regression model indicated that these months had a higher expected count of attacks, with May and August (the beginning of the Summer season) having the most substantial increase.
+The Poisson regression analysis - the statistical model best suited for this type of count data - was applied to evaluate the monthly frequency of terrorist attacks. The model revealed that certain months showed a statistically significant increase in the number of attacks compared to January (the baseline month). Specifically, May, June, July, August, October, November, and December were found to have higher numbers of attacks, aligning with the hypothesized seasonal trend. The coefficients from the regression model indicated that these months had a higher expected count of attacks, with May and August (the beginning of the Summer season) having the most substantial increase.
 
-As discussed in the preliminary analysis, there are a variety of hypotheses that could explain our results. The results show a trend where the number of distinct terrorist attacks increases through the spring, reaching an evident peak during the summer months. The small dip in the fall, particularly in August and September, followed by a rise again in October and November, suggests potential seasonal factors or operational cycles may influence terrorist activity, as our hypothesis stated.
+```{r Plot Final}
+print(plot_2)
 
+knitr::kable(model_summary_df, format = "markdown")
 
-This increase in the spring and summer months pattern could be related to various factors:
+```
+
+As we discussed in the preliminary analysis, the graph shows a trend where the number of distinct terrorist attacks increases through the spring, reaching an evident peak during the summer months. The small dip in the fall, particularly in August and September, followed by a rise again in October and November, suggests potential seasonal factors or operational cycles may influence terrorist activity, as our hypothesis stated.
+
+This pattern could be related to various hypothetical factors:
 
 Hypothesis 1: Operational Conditions: Better weather in spring and summer could facilitate the logistics of carrying out attacks. Additionally, longer daylight hours may offer more opportunities for actions that require daylight.
 
@@ -234,17 +247,20 @@ Hypothesis 2: Counterterrorism Efforts: The return to work of police and nationa
 
 Hypothesis 3: Resource Reallocation: Terrorist groups may reallocate resources after a high-activity period, leading to a temporary dip in attacks in these months.
 
-Although this notable trend is observable in the data, it’s definitely only a starting point for understanding the complexities behind terrorist activities.
+It's important to note that while this trend is observable in the data, it's definitely only a starting point for understanding the complexities behind terrorist activities.
 
-```{r Plot Final}
-print(plot_2)
-
-knitr::kable(model_summary_df, format = "markdown")
-
-```
 
 4. Conclusion
 
 The regression results align with the hypothesis, indicating a seasonal pattern in the frequency of terrorist attacks, with peaks during summer months and notable increases in late fall. This pattern is consistent with the initial hypothesis of seasonal variation in terrorist activity. However, given the cross-sectional design, causal relationships cannot be definitively established. The study acknowledges that confounding variables not included in the model could influence the results. Future research could benefit from a longitudinal dataset, potentially spanning a broader range of years, and including additional variables such as geopolitical events, economic factors, or counterterrorism strategies. A deeper analysis could provide a more nuanced understanding of the drivers behind the seasonal trends in terrorist activities.
+
+Additionally, extending the scope of our analysis, we notice that the monthly number of terrorist attacks in Western Europe is steadily decreasing from 1965 to 2005; indicating a much welcome trend in the international and national security of nations in Western Europe.
+
+```{r Plot Final 2}
+
+print(plot_3)
+
+```
+
 
 
