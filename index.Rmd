@@ -8,7 +8,6 @@ output:
 ---
 
 
-
 ## Project Proposal
 
 Proposal: Analyzing Monthly Temporal Patterns of Terrorism in Western Europe (1965-2005)
