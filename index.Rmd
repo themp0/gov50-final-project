@@ -73,7 +73,7 @@ print(plot_1)
 
 ```
 
-## Preliminary Analysis:
+## Extended Analysis:
 
 The bar chart visualizes the frequency of terrorist killings in Western European countries from 1965 to 2005 by month. From the chart, it's evident that May and August had the highest number of reported killings, with May being the peak. There's a noticeable increase in killings starting from April, with a peak in May, followed by a somewhat high frequency that persists through the summer and fall months before tapering off towards the end of the year. This pattern could suggest a seasonal trend in the frequency of terrorist activities, with late spring to early fall being periods of higher risk. However, to establish a solid conclusion, it would be essential to analyze the context of these events, the types of groups active during these times, and other socio-political factors that might influence these patterns
 
@@ -200,7 +200,7 @@ Admittedly, this graph does not provide much information in the context of our h
 
 --------
 
-## Final Report
+## Final Report (Summary of Extended Analysis)
 
 1. Introduction
 
