@@ -215,6 +215,27 @@ The dataset is compiled from historical records of terrorist attacks, with the m
 
 The Poisson regression analysis - the statistical model suited for count data - was applied to evaluate the monthly frequency of terrorist attacks. The model revealed that certain months showed a statistically significant increase in the number of attacks compared to January, the baseline month. Specifically, May, June, July, August, October, November, and December were found to have higher numbers of attacks, aligning with the hypothesized seasonal trend. The coefficients from the regression model indicated that these months had a higher expected count of attacks, with May and August (the beginning of the Summer season) having the most substantial increase.
 
+As discussed in the preliminary analysis, there are a variety of hypotheses that could explain our results. The results show a trend where the number of distinct terrorist attacks increases through the spring, reaching an evident peak during the summer months. The small dip in the fall, particularly in August and September, followed by a rise again in October and November, suggests potential seasonal factors or operational cycles may influence terrorist activity, as our hypothesis stated.
+
+
+This increase in the spring and summer months pattern could be related to various factors:
+
+Hypothesis 1: Operational Conditions: Better weather in spring and summer could facilitate the logistics of carrying out attacks. Additionally, longer daylight hours may offer more opportunities for actions that require daylight.
+
+Hypothesis 2: Vacation Periods: Summer months are typically vacation periods, which may not only affect the number of potential targets due to tourism but might also impact the availability of members within terrorist groups to both plan and execute attacks.
+
+Hypothesis 3: Political and Social Calendar: National holidays, elections or other political events often fall within these peak periods and may serve as catalysts for terrorist activities aimed at disrupting or making a statement during these times.
+
+The decrease in the Fall could be due to a variety of factors, such as:
+
+Hypothesis 1: Return to Routine: As people return to work and school, there may be a temporary dip in the availability of targets or in the operational capacity of terrorist networks.
+
+Hypothesis 2: Counterterrorism Efforts: The return to work of police and national security forces from summer holidays could deter planned attacks.
+
+Hypothesis 3: Resource Reallocation: Terrorist groups may reallocate resources after a high-activity period, leading to a temporary dip in attacks in these months.
+
+Although this notable trend is observable in the data, it’s definitely only a starting point for understanding the complexities behind terrorist activities.
+
 ```{r Plot Final}
 print(plot_2)
 
